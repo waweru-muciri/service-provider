@@ -1,9 +1,9 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
+import AppointmentsScreen from '../screens/AppointmentsScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
@@ -50,36 +50,13 @@ const HomeStack = () => (
         headerLeftContainerStyle: {paddingLeft: 10},
       })}
     />
+    <Stack.Screen
+      name="Appointments Screen"
+      component={AppointmentsScreen}
+    />
   </Stack.Navigator>
 );
 
-const BottomTab = createBottomTabNavigator();
-
-const TabNavigator = () => (
-  <BottomTab.Navigator
-    initialRouteName="Home"
-    screenOptions={{
-      tabBarInactiveTintColor: 'grey',
-      tabBarActiveTintColor: AppStyles.color.tint,
-      tabBarIcon: ({focused}) => {
-        return (
-          <Image
-            style={{
-              tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey,
-            }}
-            source={AppIcon.images.home}
-          />
-        );
-      },
-      headerShown: false,
-    }}>
-    <BottomTab.Screen
-      options={{tabBarLabel: 'Home'}}
-      name="HomeStack"
-      component={HomeStack}
-    />
-  </BottomTab.Navigator>
-);
 
 // drawer stack
 const Drawer = createDrawerNavigator();
@@ -93,7 +70,7 @@ const DrawerStack = () => (
     drawerContent={({navigation}) => (
       <DrawerContainer navigation={navigation} />
     )}>
-    <Drawer.Screen name="Tab" component={TabNavigator} />
+    <Drawer.Screen name="HomeStack" component={HomeStack} />
   </Drawer.Navigator>
 );
 

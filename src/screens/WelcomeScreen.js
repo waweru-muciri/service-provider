@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Text,
@@ -7,14 +7,14 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch} from 'react-redux';
-import {login} from '../reducers';
-import {AppStyles} from '../AppStyles';
+import { useDispatch } from 'react-redux';
+import { login } from '../reducers';
+import { AppStyles } from '../AppStyles';
 
-function WelcomeScreen({navigation}) {
+function WelcomeScreen({ navigation }) {
+  const auth = getAuth();
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
@@ -33,35 +33,15 @@ function WelcomeScreen({navigation}) {
       password != null &&
       password.length > 0
     ) {
-      auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((user) => {
-          firestore()
-            .collection('users')
-            .doc(id)
-            .get()
-            .then(function (doc) {
-              var userDict = {
-                id: id,
-                email: email,
-                profileURL: doc.photoURL,
-                fullname: doc.data().fullname,
-              };
-              if (doc.exists) {
-                dispatch(login(userDict));
-                navigation.navigate('DrawerStack');
-              } else {
-                setIsLoading(false);
-              }
-            })
-            .catch(function (error) {
-              setIsLoading(false);
-              const {code, message} = error;
-              Alert.alert(message);
-            });
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          dispatch(login(user));
+          navigation.navigate('DrawerStack');
         })
         .catch((error) => {
-          const {code, message} = error;
+          const { code, message } = error;
           setIsLoading(false);
           Alert.alert(message);
           // For details of error codes, see the docs

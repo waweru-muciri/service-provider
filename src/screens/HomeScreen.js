@@ -1,11 +1,10 @@
-import React, {useLayoutEffect} from 'react';
-import {ScrollView, StyleSheet, Text} from 'react-native';
-import {connect, useSelector} from 'react-redux';
-import { AppStyles} from '../AppStyles';
-import {Configuration} from '../Configuration';
+import React, { useLayoutEffect } from 'react';
+import { ScrollView, StyleSheet, Text } from 'react-native';
+import { connect } from 'react-redux';
+import { AppStyles } from '../AppStyles';
+import { Configuration } from '../Configuration';
 
-function HomeScreen({navigation}) {
-  const auth = useSelector((state) => state.auth);
+function HomeScreen({ navigation, user }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -15,7 +14,7 @@ function HomeScreen({navigation}) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Welcome {auth.user?.fullname ?? 'User'}</Text>
+      <Text style={styles.title}> Welcome {user?.displayName}</Text>
     </ScrollView>
   );
 }
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  user: state.auth.user,
+  user: state.user,
 });
 
 export default connect(mapStateToProps)(HomeScreen);

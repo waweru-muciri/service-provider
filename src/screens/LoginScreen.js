@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,16 +8,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 // import Button from 'react-native-button';
-import {AppStyles} from '../AppStyles';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import { AppStyles } from '../AppStyles';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch} from 'react-redux';
-import {login} from '../reducers';
+import { useDispatch } from 'react-redux';
+import { login } from '../reducers';
 
-function LoginScreen({navigation}) {
+function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const auth = getAuth();
 
   const dispatch = useDispatch();
 
@@ -26,32 +26,21 @@ function LoginScreen({navigation}) {
       Alert.alert('Please fill out the required fields.');
       return;
     }
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((response) => {
-        const user_uid = response.user._user.uid;
-        firestore()
-          .collection('users')
-          .doc(user_uid)
-          .get()
-          .then(function (user) {
-            if (user.exists) {
-              AsyncStorage.setItem('@loggedInUserID:id', user_uid);
-              AsyncStorage.setItem('@loggedInUserID:key', email);
-              AsyncStorage.setItem('@loggedInUserID:password', password);
-              dispatch(login(user.data()));
-              navigation.navigate('DrawerStack');
-            } else {
-              Alert.alert('User does not exist. Please try again.');
-            }
-          })
-          .catch(function (error) {
-            const {message} = error;
-            Alert.alert(message);
-          });
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        const user_uid = user.uid;
+        //persist user data to async storage
+        AsyncStorage.setItem('@loggedInUserID:id', user_uid);
+        AsyncStorage.setItem('@loggedInUserID:key', email);
+        AsyncStorage.setItem('@loggedInUserID:password', password);
+        dispatch(login(user));
+        navigation.navigate('DrawerStack');
+
       })
       .catch((error) => {
-        const {message} = error;
+        const { message } = error;
         Alert.alert(message);
         // For details of error codes, see the docs
         // The message contains the default Firebase string

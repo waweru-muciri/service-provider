@@ -1,13 +1,15 @@
-import React, {useState} from 'react';
-import {Alert, StyleSheet, Text, TextInput, View, TouchableOpacity} from 'react-native';
-// import Button from 'react-native-button';
-import {AppStyles} from '../AppStyles';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import {useDispatch} from 'react-redux';
-import {login} from '../reducers';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { AppStyles } from '../AppStyles';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useDispatch } from 'react-redux';
+import { login } from '../reducers';
+import { db } from '../firebaseConfig';
 
-function SignupScreen({navigation}) {
+function SignupScreen({ navigation }) {
+  const auth = getAuth();
+
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -16,32 +18,28 @@ function SignupScreen({navigation}) {
   const dispatch = useDispatch();
 
   const onRegister = () => {
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
         const data = {
           email: email,
           fullname: fullname,
           phone: phone,
-          appIdentifier: 'rn-android-universal-listings',
         };
-        const user_uid = response.user._user.uid;
-        firestore().collection('users').doc(user_uid).set(data);
-        firestore()
-          .collection('users')
-          .doc(user_uid)
-          .get()
-          .then(function (user) {
-            dispatch(login(user.data()));
-            navigation.navigate('DrawerStack', {user});
+        // Signed in 
+        const user = userCredential.user;
+        const user_uid = user.uid;
+        //persist user details into firestore
+        setDoc(doc(db, "users", user_uid), data)
+          .then(() => {
+            Alert.alert("Successfully registered new user")
           })
-          .catch(function (error) {
-            const {code, message} = error;
-            Alert.alert(message);
-          });
+          .catch(({ code, message }) => Alert.alert(message))
+        dispatch(login(user));
+        navigation.navigate('DrawerStack', { user });
+
       })
       .catch((error) => {
-        const {code, message} = error;
+        const { code, message } = error;
         Alert.alert(message);
       });
   };
@@ -91,7 +89,7 @@ function SignupScreen({navigation}) {
         />
       </View>
       <TouchableOpacity
-        style={[styles.facebookContainer, {marginTop: 50}]}
+        style={[styles.facebookContainer, { marginTop: 50 }]}
         onPress={() => onRegister()}>
         <Text style={styles.facebookText}>Sign Up</Text>
       </TouchableOpacity>
