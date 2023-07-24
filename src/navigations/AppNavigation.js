@@ -1,17 +1,20 @@
 import React from 'react';
-import {Image, Pressable, StyleSheet} from 'react-native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationContainer} from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 import AppointmentsScreen from '../screens/AppointmentsScreen';
+import AppointmentInputScreen from '../screens/AppointmentInputScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import {AppIcon, AppStyles} from '../AppStyles';
-import {Configuration} from '../Configuration';
-import DrawerContainer from '../components/DrawerContainer';
+import { AppStyles } from '../AppStyles';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import ServicesScreen from '../screens/ServicesScreen';
+import AccountProfileScreen from '../screens/AccountProfileScreen';
 
+const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // login stack
@@ -26,61 +29,47 @@ const LoginStack = () => (
     <Stack.Screen name="Welcome" component={WelcomeScreen} />
     <Stack.Screen name="Login" component={LoginScreen} />
     <Stack.Screen name="Signup" component={SignupScreen} />
-    
+
   </Stack.Navigator>
 );
 
 const HomeStack = () => (
-  <Stack.Navigator
-    initialRouteName="Home"
-    screenOptions={{
-      headerTintColor: 'red',
-      headerTitleStyle: styles.headerTitleStyle,
-      headerMode: 'float',
-    }}>
-    <Stack.Screen
-      name="Home"
-      component={HomeScreen}
-      options={({navigation}) => ({
-        headerLeft: () => (
-          <Pressable onPress={() => navigation.openDrawer()}>
-            <Image style={styles.iconStyle} source={AppIcon.images.menu} />
-          </Pressable>
-        ),
-        headerLeftContainerStyle: {paddingLeft: 10},
-      })}
-    />
-    <Stack.Screen
-      name="Appointments Screen"
-      component={AppointmentsScreen}
-    />
-  </Stack.Navigator>
+  <Tab.Navigator screenOptions={({ route }) => ({
+    tabBarIcon: ({ focused, color, size }) => {
+      let iconName;
+
+      if (route.name === 'Home') {
+        iconName = "home"
+      } else if (route.name === 'Services') {
+        iconName = "book-plus";
+      }
+      else if (route.name === 'Appointments') {
+        iconName = "calendar";
+      } else if (route.name === 'Account') {
+        iconName = "account";
+      }
+
+      // You can return any component that you like here!
+      return <Icon name={iconName} size={size} color={color} />;
+    },
+    tabBarActiveTintColor: 'tomato',
+    tabBarInactiveTintColor: 'gray',
+  })}>
+    {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
+    <Tab.Screen name="Appointments" component={AppointmentsScreen} />
+    <Tab.Screen name="Services" component={ServicesScreen} />
+    <Tab.Screen name="Account" component={AccountProfileScreen} />
+  </Tab.Navigator >
 );
 
-
-// drawer stack
-const Drawer = createDrawerNavigator();
-const DrawerStack = () => (
-  <Drawer.Navigator
-    screenOptions={{
-      drawerStyle: {outerWidth: 200},
-      drawerPosition: 'left',
-      headerShown: false,
-    }}
-    drawerContent={({navigation}) => (
-      <DrawerContainer navigation={navigation} />
-    )}>
-    <Drawer.Screen name="HomeStack" component={HomeStack} />
-  </Drawer.Navigator>
-);
 
 // Manifest of possible screens
 const RootNavigator = () => (
   <Stack.Navigator
     initialRouteName="LoginStack"
-    screenOptions={{headerShown: false}}>
+    screenOptions={{ headerShown: false }}>
     <Stack.Screen name="LoginStack" component={LoginStack} />
-    <Stack.Screen name="DrawerStack" component={DrawerStack} />
+    <Stack.Screen name="HomeStack" component={HomeStack} />
   </Stack.Navigator>
 );
 
@@ -97,7 +86,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: 'black',
   },
-  iconStyle: {tintColor: AppStyles.color.tint, width: 30, height: 30},
+  iconStyle: { tintColor: AppStyles.color.tint, width: 30, height: 30 },
 });
 
 export default AppNavigator;

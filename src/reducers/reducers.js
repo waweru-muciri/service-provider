@@ -1,22 +1,22 @@
 import * as actionTypes from "./actionTypes";
 
-export function services(state = [], action) {
+export function serviceProviders(state = [], action) {
     switch (action.type) {
         case actionTypes.SERVICES_FETCH_DATA_SUCCESS:
-            return action.services;
+            return action.serviceProviders;
 
         case actionTypes.EDIT_SERVICE:
-            return state.map((service) =>
-                service.id === action.service.id
-                    ? Object.assign({}, service, action.service)
-                    : service
+            return state.map((serviceProvider) =>
+                serviceProvider.id === action.serviceProvider.id
+                    ? Object.assign({}, serviceProvider, action.serviceProvider)
+                    : serviceProvider
             );
 
         case actionTypes.ADD_SERVICE:
-            return [...state, action.service];
+            return [...state, action.serviceProvider];
 
         case actionTypes.DELETE_SERVICE:
-            return state.filter((service) => service.id !== action.serviceId);
+            return state.filter((serviceProvider) => serviceProvider.id !== action.serviceId);
         default:
             return state;
     }

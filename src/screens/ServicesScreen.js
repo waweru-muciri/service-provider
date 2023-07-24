@@ -7,16 +7,16 @@ import { View } from 'react-native';
 import PageTitle from '../components/PageTitle';
 import PageHeader from '../components/PageHeader';
 
-function AppointmentsScreen({ navigation, fetchData, appointments }) {
+function ServicesScreen({ navigation, fetchData, serviceProviders }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: 'Appointments',
+            title: 'Services',
         });
     }, []);
 
     useEffect(() => {
-        fetchData("appointments")
+        fetchData("service-providers")
     }, [])
 
 
@@ -24,21 +24,21 @@ function AppointmentsScreen({ navigation, fetchData, appointments }) {
         <ScrollView>
             <View style={{ flex: 1 }}>
                 <PageHeader>
-                    <PageTitle>Your appointments</PageTitle>
+                    <PageTitle>Available Services</PageTitle>
                 </PageHeader>
                 <View style={{ width: "90%", marginLeft: "auto", marginRight: "auto", paddingTop: 20, paddingBottom: 20, }}>
                     <View style={{ flex: 1 }}>
                         <List.Section>
                             {
-                                [...appointments].map((appointment) => (
+                                [...serviceProviders].map((serviceProvider) => (
                                     <List.Item
-                                        key={appointment?.id}
-                                        title={appointment?.title}
-                                        description={appointment?.description}
+                                        key={serviceProvider?.id}
+                                        title={serviceProvider?.title}
+                                        description={serviceProvider?.description}
                                         left={(props) => <List.Icon {...props} icon="calendar-today" />}
                                         onPress={() => {
                                             navigation.navigate("AppointmentInputScreen", {
-                                                appointmentId: appointment.id
+                                                serviceProviderId: serviceProvider.id
                                             })
                                         }}
                                     />))
@@ -54,7 +54,7 @@ function AppointmentsScreen({ navigation, fetchData, appointments }) {
 const mapStateToProps = (state) => {
     return {
         user: state.user,
-        appointments: state.appointments,
+        serviceProviders: state.serviceProviders,
     }
 };
 
@@ -66,4 +66,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppointmentsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ServicesScreen);

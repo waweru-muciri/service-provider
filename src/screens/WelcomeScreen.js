@@ -10,8 +10,10 @@ import {
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { login } from '../reducers';
+import { login, setUserProfile } from '../reducers';
 import { AppStyles } from '../AppStyles';
+import { db } from '../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
 
 function WelcomeScreen({ navigation }) {
   const auth = getAuth();
@@ -33,24 +35,34 @@ function WelcomeScreen({ navigation }) {
       password != null &&
       password.length > 0
     ) {
-      signInWithEmailAndPassword(auth, email, password)
+      await signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // Signed in 
           const user = userCredential.user;
-          dispatch(login(user));
-          navigation.navigate('DrawerStack');
+          //get user profile stored in firestore 
+          getDoc(doc(db, "users", user.uid))
+            .then(docSnapshot => {
+              const userProfile = docSnapshot.data()
+              dispatch(login(userProfile));
+              dispatch(setUserProfile(userProfile));
+              setIsLoading(false);
+            })
+          navigation.navigate('HomeStack');
         })
         .catch((error) => {
           const { code, message } = error;
           setIsLoading(false);
           Alert.alert(message);
+          navigation.navigate('Login');
           // For details of error codes, see the docs
           // The message contains the default Firebase string
           // representation of the error
         });
       return;
+    } else{
+      setIsLoading(false);
+      navigation.navigate('Login');
     }
-    setIsLoading(false);
   }
 
   if (isLoading == true) {
@@ -64,7 +76,7 @@ function WelcomeScreen({ navigation }) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Say hello to your new app</Text>
+      <Text style={styles.title}>Welcome to Farm E-Wallet App</Text>
       <TouchableOpacity
         style={styles.loginContainer}
         onPress={() => navigation.navigate('Login')}>

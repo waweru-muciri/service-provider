@@ -15,6 +15,7 @@ function HomeScreen({ navigation, user }) {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}> Welcome {user?.displayName}</Text>
+      <Text>Hello world</Text>
     </ScrollView>
   );
 }
