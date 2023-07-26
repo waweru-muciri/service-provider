@@ -1,13 +1,13 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { fetchDataFromUrl } from '../reducers';
+import { fetchDataFromUrl, handleDelete } from '../reducers';
 import { List } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import PageTitle from '../components/PageTitle';
 import PageHeader from '../components/PageHeader';
 
-function AppointmentsScreen({ navigation, fetchData, appointments }) {
+function AppointmentsScreen({ navigation, fetchData, deleteItem, appointments }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -17,6 +17,7 @@ function AppointmentsScreen({ navigation, fetchData, appointments }) {
 
     useEffect(() => {
         fetchData("appointments")
+        fetchData("service-providers")
     }, [])
 
 
@@ -36,8 +37,13 @@ function AppointmentsScreen({ navigation, fetchData, appointments }) {
                                         title={appointment?.title}
                                         description={appointment?.description}
                                         left={(props) => <List.Icon {...props} icon="calendar-today" />}
+                                        right={(props) => <TouchableOpacity onPress={async () => {
+                                            await deleteItem(appointment.id, "appointments")
+                                        }}>
+                                            <List.Icon {...props} icon="delete" />
+                                        </TouchableOpacity>}
                                         onPress={() => {
-                                            navigation.navigate("AppointmentInputScreen", {
+                                            navigation.navigate("AppointmentDetailsScreen", {
                                                 appointmentId: appointment.id
                                             })
                                         }}
@@ -62,6 +68,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         fetchData: (url) => {
             dispatch(fetchDataFromUrl(url))
+        },
+        deleteItem: (itemId, url) => {
+            dispatch(handleDelete(itemId, url))
         },
     }
 }

@@ -76,7 +76,7 @@ function WelcomeScreen({ navigation }) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Farm E-Wallet App</Text>
+      <Text style={styles.title}>Welcome to AppointmentsManager</Text>
       <TouchableOpacity
         style={styles.loginContainer}
         onPress={() => navigation.navigate('Login')}>

@@ -191,7 +191,7 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
                             const appointment = {
                                 ...data, start_date: appointmentStartDate,
                                 end_date: appointmentEndDate,
-                                service_provider, appointment_cost, appointment_venue, service_name, payed: false
+                                service_provider, appointment_cost, appointment_venue, service_name, payed: false, serviceProvider
                             }
                             await submitForm(appointment, "appointments")
                             Alert.alert("Success", "Item saved successfully")

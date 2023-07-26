@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { fetchDataFromUrl } from '../reducers';
 import PageTitle from '../components/PageTitle';
 import PageHeader from '../components/PageHeader';
 import { updateUserProfile } from "../reducers";
@@ -16,19 +15,16 @@ const schema = yup.object().shape({
     first_name: yup.string().required("First Name is required"),
     phone_number: yup.string().required("Phone Number is required"),
     last_name: yup.string().required("Last Name is required"),
+    address: yup.string().required("Address is required"),
   });
 
-function AccountProfileScreen({ navigation, fetchData, userProfile }) {
+function AccountProfileScreen({ navigation, updateProfile, userProfile }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'User Profile',
         });
     }, []);
-
-    // useEffect(() => {
-    //     fetchData("appointments")
-    // }, [])
 
     const defaultValues = {
         ...userProfile,
@@ -62,7 +58,7 @@ function AccountProfileScreen({ navigation, fetchData, userProfile }) {
                                 onChangeText={(value) => onChange(value)}
                                 value={value}
                                 style={{
-                                    marginBottom: 10,
+                                    marginBottom: 20,
                                 }}
                                 keyboardType="default"
                                 error={errors.first_name ? true : false}
@@ -91,7 +87,7 @@ function AccountProfileScreen({ navigation, fetchData, userProfile }) {
                                 onChangeText={(value) => onChange(value)}
                                 value={value}
                                 style={{
-                                    marginBottom: 10,
+                                    marginBottom: 20,
                                 }}
                                 error={errors.last_name ? true : false}
                             />
@@ -119,7 +115,7 @@ function AccountProfileScreen({ navigation, fetchData, userProfile }) {
                                 onChangeText={(value) => onChange(value)}
                                 value={value}
                                 style={{
-                                    marginBottom: 10,
+                                    marginBottom: 20,
                                 }}
                                 error={errors.phone_number ? true : false}
                             />
@@ -137,9 +133,37 @@ function AccountProfileScreen({ navigation, fetchData, userProfile }) {
                             {errors.phone_number.message}
                         </Text>
                     )}
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                label="Address"
+                                mode="outlined"
+                                onBlur={onBlur}
+                                onChangeText={(value) => onChange(value)}
+                                value={value}
+                                style={{
+                                    marginBottom: 20,
+                                }}
+                                error={errors.address ? true : false}
+                            />
+                        )}
+                        name="address"
+                        rules={{ required: true }}
+                    />
+                    {errors.address && (
+                        <Text
+                            variant="labelLarge"
+                            style={{
+                                color: colors.error,
+                            }}
+                        >
+                            {errors.address.message}
+                        </Text>
+                    )}
                     <View>
                         <PrimaryButton onPress={handleSubmit(async (data) => {
-                            await updateUserInfo(userProfile.id, data);
+                            await updateProfile(userProfile.id, data);
                             Alert.alert("Success!", "Profile saved successfully");
                         })}>
                             Save Profile
@@ -159,10 +183,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchData: (url) => {
-            dispatch(fetchDataFromUrl(url))
-        },
-        updateUserInfo: (userId, userData) => {
+        updateProfile: (userId, userData) => {
             dispatch(updateUserProfile(userId, userData));
           },
     }

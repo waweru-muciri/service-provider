@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import AppointmentsScreen from '../screens/AppointmentsScreen';
 import AppointmentInputScreen from '../screens/AppointmentInputScreen';
-import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -13,6 +12,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ServicesScreen from '../screens/ServicesScreen';
 import AccountProfileScreen from '../screens/AccountProfileScreen';
+import AppointmentDetailsScreen from '../screens/AppointmentDetailsScreen';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,6 +69,7 @@ const RootNavigator = () => (
   <Stack.Navigator
     initialRouteName="LoginStack"
     screenOptions={{ headerShown: false }}>
+    <Tab.Screen name="AppointmentDetailsScreen" component={AppointmentDetailsScreen} />
     <Tab.Screen name="AppointmentInputScreen" component={AppointmentInputScreen} />
     <Stack.Screen name="LoginStack" component={LoginStack} />
     <Stack.Screen name="HomeStack" component={HomeStack} />

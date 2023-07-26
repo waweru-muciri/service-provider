@@ -30,10 +30,10 @@ function ServicesScreen({ navigation, fetchData, serviceProviders }) {
                         <List.Section>
                             {
                                 [...serviceProviders].map(({ id, first_name, last_name, service }) => (
-                                    <List.Item
+                                    <List.Item style={{ paddingTop: 10, paddingBottom: 10 }}
                                         key={id}
                                         title={`Provider: ${first_name} ${last_name}`}
-                                        description={`Name: ${service?.description} \n Description: ${service?.description}`}
+                                        description={`Name: ${service?.name} \n Description: ${service?.description}`}
                                         left={(props) => <List.Icon {...props} icon="calendar-today" />}
                                         onPress={() => {
                                             navigation.navigate("AppointmentInputScreen", {

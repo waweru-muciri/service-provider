@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { login, setUserProfile } from '../reducers';
 import { db } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button, Switch, Text } from 'react-native-paper';
+import { Button,  Text } from 'react-native-paper';
 
 function SignupScreen({ navigation }) {
   const auth = getAuth();
@@ -17,7 +17,6 @@ function SignupScreen({ navigation }) {
   const [phone_number, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isUserServiceProvider, toggleIsServiceProviderSwitch] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -29,7 +28,6 @@ function SignupScreen({ navigation }) {
           first_name: first_name,
           last_name: last_name,
           phone_number: phone_number,
-          isUserServiceProvider: isUserServiceProvider,
           account_number: user.uid,
           amount_in_account: 0
         };
@@ -109,12 +107,6 @@ function SignupScreen({ navigation }) {
           placeholderTextColor={AppStyles.color.grey}
           underlineColorAndroid="transparent"
         />
-      </View>
-      <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center", padding: 20 }}>
-        <Text>Is User Admin</Text>
-        <Text>
-          <Switch value={isUserServiceProvider} onValueChange={(value) => toggleIsServiceProviderSwitch(!isUserServiceProvider)} />;
-        </Text>
       </View>
       <Button
         mode='contained'
