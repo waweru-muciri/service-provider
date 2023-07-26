@@ -41,11 +41,11 @@ function LoginScreen({ navigation }) {
         AsyncStorage.setItem('@loggedInUserID:password', trimmedPassword);
         //get user profile stored in firestore 
         getDoc(doc(db, "users", user.uid))
-        .then(docSnapshot => {
-          const userProfile = docSnapshot.data()
-          dispatch(login(userProfile));
-          dispatch(setUserProfile(userProfile));
-        }).catch(error => console.log(error))
+          .then(async docSnapshot => {
+            const userProfile = docSnapshot.data()
+            dispatch(login(userProfile));
+            dispatch(setUserProfile(userProfile));
+          }).catch(error => console.log(error))
         navigation.navigate('HomeStack');
 
       })

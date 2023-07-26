@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Button } from "react-native-paper";
 
 
-export default function PrimaryButton({ children, onPress, disabled, style }) {
+export default function PrimaryButton({ children, icon, onPress, disabled, style }) {
     return (
         <Button disabled={disabled}
+            icon={icon}
             labelStyle={{
                 color: "#ffffff",
                 fontSize: 18,

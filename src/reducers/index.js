@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { db } from '../firebaseConfig';
 import { doc, getDocs, deleteDoc, collection, updateDoc, addDoc } from "firebase/firestore";
-import { addAppointment, appointmentsFetchDataSuccess, deleteAppointment, editAppointment } from '../actions/actions';
+import { addAppointment, appointmentsFetchDataSuccess, deleteAppointment, editAppointment, servicesFetchDataSuccess, editService, addService, deleteService } from '../actions/actions';
 import { serviceProviders, appointments } from "./reducers"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -59,6 +59,29 @@ export function updateUserProfile(userId, userData) {
   }
 }
 
+export function getServices() {
+  return async (dispatch) => {
+    try {
+      const snapshot = await getDocs(collection(db, "service-providers"))
+      const fetchedItems = snapshot.docs.map((doc) => {
+        const fetchedObject = Object.assign({}, doc.data(),
+          {
+            _id: doc._id,
+          }
+        );
+        return fetchedObject;
+      });
+      switch (url) {
+        case "service-providers":
+          dispatch(servicesFetchDataSuccess(fetchedItems));
+          break;
+      }
+    } catch (error) {
+    }
+  }
+}
+
+
 
 export async function uploadImageAsync(uri) {
   // Why are we using XMLHttpRequest? See:
@@ -93,9 +116,10 @@ export function handleItemFormSubmit(data, url) {
   }
   return async (dispatch) => {
     const user_id = await AsyncStorage.getItem("@loggedInUserID:_id")
+    const isUserServiceProvider = await AsyncStorage.getItem("@loggedInUserID:isUserServiceProvider")
     typeof data._id !== "undefined"
       ? //send post request to edit the item
-      updateDoc(doc(db, "users", user_id, url, data._id), data)
+      updateDoc(isUserServiceProvider ? doc(db, "service-providers", user_id, url, data._id) : doc(db, "users", user_id, url, data._id), data)
         .then((docRef) => {
           let modifiedObject = Object.assign(
             {},
@@ -106,7 +130,7 @@ export function handleItemFormSubmit(data, url) {
               dispatch(editAppointment(modifiedObject));
               break;
             case "service-providers":
-              dispatch(editServiceProvider(modifiedObject));
+              dispatch(editService(modifiedObject));
               break;
           }
         })
@@ -163,7 +187,7 @@ export function fetchDataFromUrl(url) {
           dispatch(appointmentsFetchDataSuccess(fetchedItems));
           break;
         case "service-providers":
-          dispatch(serviceProvidersFetchDataSuccess(fetchedItems));
+          dispatch(servicesFetchDataSuccess(fetchedItems));
           break;
       }
     } catch (error) {

@@ -6,6 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { View } from 'react-native';
 import PageTitle from '../components/PageTitle';
 import PageHeader from '../components/PageHeader';
+import PrimaryButton from '../components/PrimaryButton';
 
 function ServicesScreen({ navigation, fetchData, serviceProviders }) {
 
@@ -27,6 +28,11 @@ function ServicesScreen({ navigation, fetchData, serviceProviders }) {
                     <PageTitle>Available Services</PageTitle>
                 </PageHeader>
                 <View style={{ width: "90%", marginLeft: "auto", marginRight: "auto", paddingTop: 20, paddingBottom: 20, }}>
+                    <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
+                        <PrimaryButton icon={"plus"} onPress={() => {
+                            navigation.navigate("ServiceInputScreen")
+                        }}>Add Service</PrimaryButton>
+                    </View>
                     <View style={{ flex: 1 }}>
                         <List.Section>
                             {

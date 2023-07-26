@@ -13,6 +13,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ServicesScreen from '../screens/ServicesScreen';
 import AccountProfileScreen from '../screens/AccountProfileScreen';
+import ServiceInputScreen from '../screens/ServiceInputScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,6 +69,7 @@ const RootNavigator = () => (
   <Stack.Navigator
     initialRouteName="LoginStack"
     screenOptions={{ headerShown: false }}>
+    <Tab.Screen name="ServiceInputScreen" component={ServiceInputScreen} />
     <Stack.Screen name="LoginStack" component={LoginStack} />
     <Stack.Screen name="HomeStack" component={HomeStack} />
   </Stack.Navigator>

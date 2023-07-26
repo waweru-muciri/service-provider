@@ -32,7 +32,6 @@ function AccountProfileScreen({ navigation, fetchData, userProfile }) {
 
     const defaultValues = {
         ...userProfile,
-        amount_in_account: `${userProfile.amount_in_account}`,
       };
 
     const { colors } = useTheme();
