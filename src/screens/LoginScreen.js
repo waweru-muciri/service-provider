@@ -42,7 +42,7 @@ function LoginScreen({ navigation }) {
         //get user profile stored in firestore 
         getDoc(doc(db, "users", user.uid))
           .then(async docSnapshot => {
-            const userProfile = docSnapshot.data()
+            const userProfile = {...docSnapshot.data(), id: user.uid}
             dispatch(login(userProfile));
             dispatch(setUserProfile(userProfile));
           }).catch(error => console.log(error))

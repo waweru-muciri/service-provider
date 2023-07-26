@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { db } from '../firebaseConfig';
 import { doc, getDocs, deleteDoc, collection, updateDoc, addDoc } from "firebase/firestore";
-import { addAppointment, appointmentsFetchDataSuccess, deleteAppointment, editAppointment, servicesFetchDataSuccess, editService, addService, deleteService } from '../actions/actions';
+import { addAppointment, appointmentsFetchDataSuccess, deleteAppointment, editAppointment, editService, serviceProvidersFetchDataSuccess,  } from '../actions/actions';
 import { serviceProviders, appointments } from "./reducers"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -35,7 +35,7 @@ function auth(state = initialAuthState, action) {
       return { ...state, userProfile: action.userProfile };
     case LOGOUT:
       return async () => {
-        await AsyncStorage.removeItem('@loggedInUserID:_id');
+        await AsyncStorage.removeItem('@loggedInUserID:id');
         await AsyncStorage.removeItem('@loggedInUserID:key');
         await AsyncStorage.removeItem('@loggedInUserID:password');
         return { ...state, isLoggedIn: false, user: {}, userProfile: {} };
@@ -66,16 +66,13 @@ export function getServices() {
       const fetchedItems = snapshot.docs.map((doc) => {
         const fetchedObject = Object.assign({}, doc.data(),
           {
-            _id: doc._id,
+            id: doc.id,
           }
         );
         return fetchedObject;
       });
-      switch (url) {
-        case "service-providers":
-          dispatch(servicesFetchDataSuccess(fetchedItems));
-          break;
-      }
+
+      dispatch(serviceProvidersFetchDataSuccess(fetchedItems));
     } catch (error) {
     }
   }
@@ -111,15 +108,13 @@ export async function uploadImageAsync(uri) {
 
 
 export function handleItemFormSubmit(data, url) {
-  if (typeof data._id === "undefined") {
-    delete data._id;
+  if (typeof data.id === "undefined") {
+    delete data.id;
   }
   return async (dispatch) => {
-    const user_id = await AsyncStorage.getItem("@loggedInUserID:_id")
-    const isUserServiceProvider = await AsyncStorage.getItem("@loggedInUserID:isUserServiceProvider")
-    typeof data._id !== "undefined"
+    typeof data.id !== "undefined"
       ? //send post request to edit the item
-      updateDoc(isUserServiceProvider ? doc(db, "service-providers", user_id, url, data._id) : doc(db, "users", user_id, url, data._id), data)
+      updateDoc(doc(db, "appointments", data.id), data)
         .then((docRef) => {
           let modifiedObject = Object.assign(
             {},
@@ -139,10 +134,10 @@ export function handleItemFormSubmit(data, url) {
         }).finally(() => {
         })
       : //send post to create item
-      addDoc(url == "service-providers" ? collection(db, "service-providers") : collection(db, "users", user_id, url), data)
+      addDoc(collection(db, "appointments"), data)
         .then((docRef) => {
           let addedItem = Object.assign({}, data, {
-            _id: docRef._id,
+            id: docRef.id,
           });
           switch (url) {
             case "appointments":
@@ -162,7 +157,7 @@ export function handleItemFormSubmit(data, url) {
 export function fetchDataFromUrl(url) {
   return async (dispatch) => {
     try {
-      const user_id = await AsyncStorage.getItem("@loggedInUserID:_id")
+      const user_id = await AsyncStorage.getItem("@loggedInUserID:id")
       let urlToFetchFrom;
       if (url == "service-providers") {
         urlToFetchFrom = "service-providers"
@@ -177,7 +172,7 @@ export function fetchDataFromUrl(url) {
       const fetchedItems = snapshot.docs.map((doc) => {
         const fetchedObject = Object.assign({}, doc.data(),
           {
-            _id: doc._id,
+            id: doc.id,
           }
         );
         return fetchedObject;
@@ -187,7 +182,7 @@ export function fetchDataFromUrl(url) {
           dispatch(appointmentsFetchDataSuccess(fetchedItems));
           break;
         case "service-providers":
-          dispatch(servicesFetchDataSuccess(fetchedItems));
+          dispatch(serviceProvidersFetchDataSuccess(fetchedItems));
           break;
       }
     } catch (error) {
@@ -199,7 +194,7 @@ export function handleDelete(itemId, url) {
   //send request to server to delete selected item
   return async (dispatch) => {
     try {
-      const user_id = await AsyncStorage.getItem("@loggedInUserID:_id")
+      const user_id = await AsyncStorage.getItem("@loggedInUserID:id")
       await deleteDoc(doc(db, "users", user_id, url, itemId))
       switch (url) {
         case "appointments":

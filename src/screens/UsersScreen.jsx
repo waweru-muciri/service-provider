@@ -46,7 +46,7 @@ function UsersScreen({ navigation, fetchData, users }) {
         <List.Section>
           {users.map((user) => (
             <List.Item
-              key={user?._id}
+              key={user?.id}
               title={`${user?.first_name} ${user?.last_name}`}
               description={`Contact: ${user?.phone_number}`}
               left={(props) => <List.Icon {...props} icon="account" />}
@@ -56,7 +56,7 @@ function UsersScreen({ navigation, fetchData, users }) {
                   icon="plus"
                   onPress={async () => {
                     try {
-                      navigation.navigate("AddMoneyToUserAccountScreen", {userId: user._id});
+                      navigation.navigate("AddMoneyToUserAccountScreen", {userId: user.id});
                     } catch (error) {
                       console.error(error);
                     }

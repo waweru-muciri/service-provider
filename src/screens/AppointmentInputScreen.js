@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { handleItemFormSubmit } from '../reducers';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -7,24 +7,26 @@ import { TextInput, Text, Button, useTheme } from 'react-native-paper';
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { PaperSelect } from "react-native-paper-select";
+import PageTitle from '../components/PageTitle';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import TextDisplay from '../components/TextDisplay';
+import PrimaryButton from '../components/PrimaryButton';
 
 
 const appointment_schema = yup.object().shape({
-    title: yup.string().required("Title is required"),
-    description: yup.string().required("Type is required"),
-    service_booked: yup.object().required("Service is required"),
+    title: yup.string().required("Name of Appointment is required"),
+    description: yup.string(),
+
 });
 
-function ServicesScreen({ navigation, route, submitForm, appointments, services }) {
+function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
     const { colors } = useTheme();
-    const { appointmentId } = route.params;
-    const appointmentToDisplay = appointments.find((appointment) => appointment.id == appointmentId) || {}
+    const { serviceProviderId } = route.params;
+    const serviceProvider = serviceProviders.find((service) => service.id == serviceProviderId) || {}
 
     const defaultValues = {
-        title: appointmentToDisplay.title,
-        description: appointmentToDisplay.description,
-        service_booked: appointmentToDisplay.service_booked,
+        appointment_date: new Date(),
+        description: "",
     }
 
     const {
@@ -42,13 +44,6 @@ function ServicesScreen({ navigation, route, submitForm, appointments, services 
     const [showStartDateAndTimePicker, setShowStartDateAndTimePicker] = useState(false);
     const [showEndDateAndTimePicker, setShowEndDateAndTimePicker] = useState(false);
 
-    //date picker configuration
-    const [mode, setMode] = useState('date');
-
-    const showMode = (currentMode) => {
-        setMode(currentMode);
-    };
-
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Appointment Details',
@@ -58,170 +53,156 @@ function ServicesScreen({ navigation, route, submitForm, appointments, services 
 
 
     return (
-        <ScrollView>
-            <View
-                style={{
-                    flex: 1,
-                    padding: 20,
-                    justifyContent: "center",
-                }}
-            >
-                <Text default style={[styles.title, styles.leftTitle]}>Edit Appointment Details</Text>
-                <Text style={styles.inputContainerTitle}>Appointment title</Text>
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <View style={styles.InputContainer}>
-                            <TextInput
-                                label="Title"
-                                mode="outlined"
-                                onBlur={onBlur}
-                                onChangeText={(value) => onChange(value)}
-                                value={value}
-                                style={{
-                                    marginBottom: 10,
-                                }}
-                                keyboardType="default"
-                                error={errors.name ? true : false}
-                            />
-                        </View>
-                    )}
-                    name="title"
-                    rules={{ required: true }}
-                />
-                {errors.title && (
-                    <Text
-                        style={{
-                            color: colors.error,
-                        }}
-                    >
-                        {errors.title.message}
-                    </Text>
-                )}
-                <Text style={styles.inputContainerTitle}>Service to book</Text>
-                <Controller
-                    control={control}
-                    render={({ field: { value } }) => (
-                        <PaperSelect
-                            label="Select Service To Book"
-                            value={value?.name}
-                            onSelection={(selectedValue) => {
-                                setValue("service_booked", selectedValue.selectedList?.[0]);
-                            }}
-                            arrayList={[...services]}
-                            selectedArrayList={[value]}
-                            errorText={errors.service_booked?.message}
-                            multiEnable={false}
-                        />
-                    )}
-                    name="service_booked"
-                    rules={{ required: true }}
-                />
-                <Text style={styles.inputContainerTitle}>Please start date and time</Text>
-                <View style={
-                    {
-                        flexDirection: 'row',
-                        alignItems: "center",
-                        textAlign: 'left',
-                        marginLeft: 30,
-                        marginTop: 10,
-                        marginBottom: 10,
-                        justifyContent: "space-evenly",
-                    }}>
-                    <Text style={{ flex: 2 }}>Selected Date: {appointmentStartDate.toLocaleDateString()}</Text>
-                    <Text style={{ flex: 2 }}>Selected Date: {appointmentStartDate.toLocaleTimeString()}</Text>
-                    <Button icon="calendar-edit" mode="contained" onPress={() => {
-                        showMode('date');
-                        setShowStartDateAndTimePicker(true)
-                    }}>
-                        Edit
-                    </Button>
-                </View>
-                {showStartDateAndTimePicker && (
-                    <DateTimePicker
-                        mode={mode}
-                        is24Hour={true}
-                        value={appointmentStartDate}
-                        minimumDate={new Date()}
-                        onChange={(event, selectedDate) => {
-                            setAppointmentStartDate(selectedDate)
-                            if (mode === "date") {
-                                setMode("time")
-                                setShowStartDateAndTimePicker(true)
-                            } else {
-                                setShowStartDateAndTimePicker(false)
-                            }
-                        }} />
-                )}
-                <Text style={styles.inputContainerTitle}>Please end date and time</Text>
-                <View style={
-                    {
-                        flexDirection: 'row',
-                        alignItems: "center",
-                        textAlign: 'left',
-                        justifyContent: "space-evenly",
-                        marginLeft: 30,
-                        marginTop: 10,
-                        marginBottom: 10,
-                    }}>
-                    <Text style={{ flex: 2 }}>Selected Date: {appointmentEndDate.toLocaleDateString()}</Text>
-                    <Text style={{ flex: 2 }}>Selected Date: {appointmentEndDate.toLocaleTimeString()}</Text>
-                    <Button icon="calendar-edit" mode="contained" onPress={() => {
-                        showMode('date');
-                        setShowEndDateAndTimePicker(true)
-                    }}>
-                        Edit
-                    </Button>
-                </View>
-                
-                {showEndDateAndTimePicker && (
-                    <DateTimePicker
-                        mode={mode}
-                        is24Hour={true}
-                        value={appointmentEndDate}
-                        minimumDate={new Date()}
-                        onChange={(event, selectedDate) => {
-                            setAppointmentEndDate(selectedDate)
-                            if (mode === "date") {
-                                setMode("time")
-                                setShowEndDateAndTimePicker(true)
-                            } else {
-                                setShowEndDateAndTimePicker(false)
-                            }
-                        }} />
-                )}
-                <Text style={styles.inputContainerTitle}>Appointment details</Text>
-                <View style={styles.InputContainer}>
+        <SafeAreaView>
+            <ScrollView>
+                <View
+                    style={{
+                        flex: 1,
+                        padding: 20,
+                        justifyContent: "center",
+                    }}
+                >
+                    <PageTitle>Add Appointment Details</PageTitle>
+                    <TextDisplay style={styles.inputContainerTitle}>Details of Service to book</TextDisplay>
+                    <TextDisplay>Name of Provider: {serviceProvider.first_name} {serviceProvider.first_name}</TextDisplay>
+                    <TextDisplay>Service offered: {serviceProvider.service?.name}</TextDisplay>
+                    <TextDisplay>Service description: {serviceProvider.service?.description}</TextDisplay>
+                    <TextDisplay>Service cost: {serviceProvider.service?.price}</TextDisplay>
+                    <TextDisplay style={styles.inputContainerTitle}>Appointment title</TextDisplay>
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                mode='outlined'
-                                multiline={true}
-                                numberOfLines={2}
-                                placeholder="Appointment Details"
-                                onBlur={onBlur}
-                                onChangeText={(value) => onChange(value)}
-                                value={value}
-                                style={{
-                                    marginBottom: 10,
-                                }}
-                                keyboardType="default"
-                                error={errors.name ? true : false}
-                            />
+                            <View style={styles.InputContainer}>
+                                <TextInput
+                                    label="Title"
+                                    mode="outlined"
+                                    onBlur={onBlur}
+                                    onChangeText={(value) => onChange(value)}
+                                    value={value}
+                                    style={{
+                                        marginBottom: 10,
+                                    }}
+                                    keyboardType="default"
+                                    error={errors.name ? true : false}
+                                />
+                            </View>
                         )}
-                        name="description"
+                        name="title"
+                        rules={{ required: true }}
                     />
+                    {errors.title && (
+                        <Text
+                            style={{
+                                color: colors.error,
+                            }}
+                        >
+                            {errors.title.message}
+                        </Text>
+                    )}
+                    <TextDisplay style={styles.inputContainerTitle}>Appointment start date and time</TextDisplay>
+                    <View style={
+                        {
+                            flexDirection: 'row',
+                            alignItems: "center",
+                            textAlign: 'left',
+                            marginLeft: 30,
+                            marginTop: 10,
+                            marginBottom: 10,
+                            justifyContent: "space-evenly",
+                        }}>
+                        <Text style={{ flex: 2 }}>Selected Date: {appointmentStartDate.toLocaleDateString()}</Text>
+                        <Button icon="calendar-edit" mode="contained" onPress={() => {
+                            setShowStartDateAndTimePicker(!showStartDateAndTimePicker)
+                        }}>
+                            Edit
+                        </Button>
+                    </View>
+                    {showStartDateAndTimePicker && (
+                        <DateTimePicker
+                            mode={"date"}
+                            is24Hour={true}
+                            value={appointmentStartDate}
+                            minimumDate={new Date()}
+                            onChange={(event, selectedDate) => {
+                                setShowStartDateAndTimePicker(!showStartDateAndTimePicker)
+                                setAppointmentStartDate(selectedDate)
+                            }} />
+                    )}
+                    <Text style={styles.inputContainerTitle}>Please select time</Text>
+                    <View style={
+                        {
+                            flexDirection: 'row',
+                            alignItems: "center",
+                            textAlign: 'left',
+                            justifyContent: "space-evenly",
+                            marginLeft: 30,
+                            marginTop: 10,
+                            marginBottom: 10,
+                        }}>
+                        <Text style={{ flex: 2 }}>Selected Time: {appointmentEndDate.toLocaleTimeString()}</Text>
+                        <Button icon="calendar-edit" mode="contained" onPress={() => {
+                            setShowEndDateAndTimePicker(!showEndDateAndTimePicker)
+                        }}>
+                            Edit
+                        </Button>
+                    </View>
+
+                    {showEndDateAndTimePicker && (
+                        <DateTimePicker
+                            mode="time"
+                            is24Hour={true}
+                            value={appointmentEndDate}
+                            minimumDate={new Date()}
+                            onChange={(event, selectedDate) => {
+                                setShowEndDateAndTimePicker(!showEndDateAndTimePicker)
+                                setAppointmentEndDate(selectedDate)
+                            }} />
+                    )}
+                    <Text style={styles.inputContainerTitle}>Appointment notes</Text>
+                    <View style={styles.InputContainer}>
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    mode='outlined'
+                                    multiline={true}
+                                    numberOfLines={2}
+                                    placeholder="Appointment notes"
+                                    onBlur={onBlur}
+                                    onChangeText={(value) => onChange(value)}
+                                    value={value}
+                                    style={{
+                                        marginBottom: 10,
+                                    }}
+                                    keyboardType="default"
+                                    error={errors.name ? true : false}
+                                />
+                            )}
+                            name="description"
+                        />
+                    </View>
+                    <View style={{ margin: 10, padding: 20 }}>
+                        <PrimaryButton mode="contained" onPress={handleSubmit(async (data) => {
+                            const { service } = serviceProvider
+                            const service_provider = serviceProvider.id
+                            const appointment_cost = service?.price
+                            const appointment_venue = serviceProvider.address
+                            const service_name = service?.name
+                            const appointment = {
+                                ...data, start_date: appointmentStartDate,
+                                end_date: appointmentEndDate,
+                                service_provider, appointment_cost, appointment_venue, service_name, payed: false
+                            }
+                            await submitForm(appointment, "appointments")
+                            Alert.alert("Success", "Item saved successfully")
+                            navigation.goBack();
+                        })}>
+                            Save Appointment
+                        </PrimaryButton>
+                    </View>
                 </View>
-                <View style={{ margin: 10, padding: 20 }}>
-                    <Button mode="contained" onPress={handleSubmit((data) => {
-                        // submitForm(data, url)
-                    })}>
-                        Save Appointment
-                    </Button>
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
@@ -256,8 +237,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        appointments: state.appointments,
-        services: state.services,
+        serviceProviders: state.serviceProviders,
     }
 };
 

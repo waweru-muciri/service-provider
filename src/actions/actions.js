@@ -28,31 +28,31 @@ export function appointmentsFetchDataSuccess(appointments) {
     };
 }
 
-export function editService(service) {
+export function editServiceProvider(serviceProvider) {
     return {
         type: actionTypes.EDIT_SERVICE,
-        service,
+        serviceProvider,
     };
 }
 
-export function addService(service) {
+export function addServiceProvider(serviceProvider) {
     return {
         type: actionTypes.ADD_SERVICE,
-        service,
+        serviceProvider,
     };
 }
 
-export function deleteService(serviceId) {
+export function deleteServiceProvider(serviceProviderId) {
     return {
         type: actionTypes.DELETE_SERVICE,
-        serviceId,
+        serviceProviderId,
     };
 }
 
-export function servicesFetchDataSuccess(services) {
+export function serviceProvidersFetchDataSuccess(serviceProviders) {
     return {
         type: actionTypes.SERVICES_FETCH_DATA_SUCCESS,
-        services,
+        serviceProviders,
     };
 }
 

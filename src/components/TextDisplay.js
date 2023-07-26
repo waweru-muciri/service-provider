@@ -7,7 +7,7 @@ export default function TextDisplay({ children, style }) {
         <Text variant="bodyMedium"
             style={[{
                 textAlign: "left", color: colors.text,
-                fontFamily: "Inter_500Medium", paddingTop: 10, paddingBottom: 10, flexWrap: "wrap"
+                paddingTop: 10, paddingBottom: 10, flexWrap: "wrap"
             }, style]}
         >
             {children}

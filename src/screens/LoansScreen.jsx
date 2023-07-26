@@ -52,7 +52,7 @@ function LoansScreen({ navigation, fetchData, loans, deleteItem }) {
           <List.Subheader>Your loans</List.Subheader>
           {loans.map((loan) => (
             <List.Item
-              key={loan._id}
+              key={loan.id}
               title={`${loan?.name} - Ksh: ${loan?.amount}`}
               description={loan?.description}
               left={(props) => <List.Icon {...props} icon="cash-plus" />}
@@ -62,7 +62,7 @@ function LoansScreen({ navigation, fetchData, loans, deleteItem }) {
                   icon="delete"
                   onPress={async () => {
                     try {
-                      await deleteItem(loan._id, "loans");
+                      await deleteItem(loan.id, "loans");
                       Alert.alert("Success!", "Item deleted successfully");
                     } catch (error) {
                       console.error(error);
