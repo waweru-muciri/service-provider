@@ -3,7 +3,6 @@ import * as actionTypes from "./actionTypes";
 export function serviceProviders(state = [], action) {
     switch (action.type) {
         case actionTypes.SERVICES_FETCH_DATA_SUCCESS:
-            console.log("services from reducer", action.serviceProviders)
             return action.serviceProviders;
 
         case actionTypes.EDIT_SERVICE:

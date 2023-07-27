@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ServicesScreen from '../screens/ServicesScreen';
 import AccountProfileScreen from '../screens/AccountProfileScreen';
 import AppointmentDetailsScreen from '../screens/AppointmentDetailsScreen';
+import ChatsScreen from '../screens/ChatsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -71,6 +72,7 @@ const RootNavigator = () => (
     screenOptions={{ headerShown: false }}>
     <Tab.Screen name="AppointmentDetailsScreen" component={AppointmentDetailsScreen} />
     <Tab.Screen name="AppointmentInputScreen" component={AppointmentInputScreen} />
+<Tab.Screen name="ChatsScreen" component={ChatsScreen} />
     <Stack.Screen name="LoginStack" component={LoginStack} />
     <Stack.Screen name="HomeStack" component={HomeStack} />
   </Stack.Navigator>

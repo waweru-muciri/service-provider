@@ -7,7 +7,7 @@ import PageTitle from '../components/PageTitle';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextDisplay from '../components/TextDisplay';
 import PrimaryButton from '../components/PrimaryButton';
-
+import { AirbnbRating } from 'react-native-ratings';
 
 function AppointmentDetails({ navigation, route, submitForm, serviceProviders, appointments }) {
     const { appointmentId } = route.params;
@@ -17,6 +17,8 @@ function AppointmentDetails({ navigation, route, submitForm, serviceProviders, a
     const serviceProvider = serviceProviders.find(item => item.id === appointment.service_provider)
 
     const [isAppointmentCompleted, setIsAppointmentCompleted] = useState(Boolean(appointment.is_completed));
+    const [serviceRating, setServiceRating] = useState(parseInt(appointment.rating) || 1);
+
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -52,10 +54,15 @@ function AppointmentDetails({ navigation, route, submitForm, serviceProviders, a
                             <Switch value={isAppointmentCompleted} onValueChange={(value) => setIsAppointmentCompleted(!isAppointmentCompleted)} />;
                         </Text>
                     </View>
+                    <View>
+                        {
+                            isAppointmentCompleted && <AirbnbRating defaultRating={serviceRating} onFinishRating={(rating) => setServiceRating(rating)} />
+                        }
+                    </View>
                     <View style={{ margin: 10, padding: 20 }}>
                         <PrimaryButton mode="contained" onPress={async () => {
                             const appointmentObjectToSave = {
-                                ...appointment, is_completed: isAppointmentCompleted
+                                ...appointment, is_completed: isAppointmentCompleted, rating: serviceRating
                             }
                             await submitForm(appointmentObjectToSave, "appointments")
                             Alert.alert("Success", "Item saved successfully")

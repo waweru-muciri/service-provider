@@ -62,7 +62,14 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
                         justifyContent: "center",
                     }}
                 >
-                    <PageTitle>Add Appointment Details</PageTitle>
+                    <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
+                        <PageTitle>Appointment Details</PageTitle>
+                        <PrimaryButton onPress={() => {
+                            navigation.navigate("ChatsScreen", {
+                                serviceProviderId: serviceProvider.id
+                            })
+                        }}>Start Chat</PrimaryButton>
+                    </View>
                     <TextDisplay style={styles.inputContainerTitle}>Details of Service to book</TextDisplay>
                     <TextDisplay>Name of Provider: {serviceProvider.first_name} {serviceProvider.first_name}</TextDisplay>
                     <TextDisplay>Service offered: {serviceProvider.service?.name}</TextDisplay>

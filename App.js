@@ -7,6 +7,9 @@ import AppNavigator from './src/navigations/AppNavigation';
 import { AppRegistry } from 'react-native';
 import { useFonts } from 'expo-font';
 import { MD3LightTheme as DefaultTheme, PaperProvider } from 'react-native-paper';
+import { enGB, registerTranslation } from 'react-native-paper-dates'
+registerTranslation('en-GB', enGB)
+
 
 
 const store = createStore(AppReducer, applyMiddleware(thunk));
