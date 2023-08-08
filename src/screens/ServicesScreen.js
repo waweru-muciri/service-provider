@@ -6,6 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { View } from 'react-native';
 import PageTitle from '../components/PageTitle';
 import PageHeader from '../components/PageHeader';
+import ServiceItem from './ServiceItem';
 
 function ServicesScreen({ navigation, fetchData, serviceProviders }) {
 
@@ -41,7 +42,7 @@ function ServicesScreen({ navigation, fetchData, serviceProviders }) {
         <ScrollView>
             <View style={{ flex: 1 }}>
                 <PageHeader>
-                    <PageTitle>Available Services</PageTitle>
+                    <PageTitle>Top Services</PageTitle>
                 </PageHeader>
                 <View style={{ marginTop: 20, marginLeft: 10, marginRight: 10 }}>
                     <Searchbar
@@ -51,23 +52,11 @@ function ServicesScreen({ navigation, fetchData, serviceProviders }) {
                     />
                 </View>
                 <View style={{ width: "90%", marginLeft: "auto", marginRight: "auto", paddingTop: 20, paddingBottom: 20, }}>
-                    <View style={{ flex: 1 }}>
-                        <List.Section>
-                            {
-                                filteredServiceProviders.map(({ id, first_name, last_name, service }) => (
-                                    <List.Item style={{ paddingTop: 10, paddingBottom: 10 }}
-                                        key={id}
-                                        title={`Provider: ${first_name} ${last_name}`}
-                                        description={`Name: ${service?.name} \n Description: ${service?.description}`}
-                                        left={(props) => <List.Icon {...props} icon="calendar-today" />}
-                                        onPress={() => {
-                                            navigation.navigate("AppointmentInputScreen", {
-                                                serviceProviderId: id
-                                            })
-                                        }}
-                                    />))
-                            }
-                        </List.Section>
+                    <View style={{ flex: 1, flexDirection: "column", gap: 10, justifyContent: "flex-start" }}>
+                        {
+                            filteredServiceProviders.map((serviceProvider, index) => (
+                                <ServiceItem key={index} navigation={navigation} serviceProvider={serviceProvider} />))
+                        }
                     </View>
                 </View>
             </View>

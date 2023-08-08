@@ -12,7 +12,7 @@ import { AirbnbRating } from 'react-native-ratings';
 function AppointmentDetails({ navigation, route, submitForm, serviceProviders, appointments }) {
     const { appointmentId } = route.params;
     const appointment = appointments.find((service) => service.id == appointmentId) || {}
-    const { start_date, end_date } = appointment
+    const { start_date, start_time } = appointment
 
     const serviceProvider = serviceProviders.find(item => item.id === appointment.service_provider)
 
@@ -39,13 +39,12 @@ function AppointmentDetails({ navigation, route, submitForm, serviceProviders, a
                     }}
                 >
                     <PageTitle>Appointment Details</PageTitle>
-                    <TextDisplay style={styles.inputContainerTitle}>Details of Appointment</TextDisplay>
                     <TextDisplay>Name of Provider: {serviceProvider.first_name} {serviceProvider.first_name}</TextDisplay>
                     <TextDisplay>Service offered: {serviceProvider.service?.name}</TextDisplay>
                     <TextDisplay>Appointment name: {appointment?.title}</TextDisplay>
                     <TextDisplay>Appointment description: {appointment?.description}</TextDisplay>
-                    <TextDisplay>Appointment start time: {new Date(start_date?.toDate()).toLocaleString()}</TextDisplay>
-                    <TextDisplay>Appointment end time: {new Date(end_date?.toDate()).toLocaleString()}</TextDisplay>
+                    <TextDisplay>Appointment start date: {new Date(start_date?.toDate()).toDateString()}</TextDisplay>
+                    <TextDisplay>Appointment start time: {start_time}</TextDisplay>
                     <TextDisplay>Appointment cost: {appointment?.appointment_cost}</TextDisplay>
                     <Text style={{ paddingTop: 10, paddingBottom: 10 }}>Please select completion status</Text>
                     <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center", padding: 10 }}>

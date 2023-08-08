@@ -14,6 +14,7 @@ import ServicesScreen from '../screens/ServicesScreen';
 import AccountProfileScreen from '../screens/AccountProfileScreen';
 import AppointmentDetailsScreen from '../screens/AppointmentDetailsScreen';
 import ChatsScreen from '../screens/ChatsScreen';
+import ServiceDetailsScreen from '../screens/ServiceDetailsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -37,6 +38,7 @@ const LoginStack = () => (
 
 const HomeStack = () => (
   <Tab.Navigator screenOptions={({ route }) => ({
+    headerShown: false,
     tabBarIcon: ({ focused, color, size }) => {
       let iconName;
 
@@ -58,7 +60,7 @@ const HomeStack = () => (
     tabBarInactiveTintColor: 'gray',
   })}>
     {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
-    <Tab.Screen name="Appointments" component={AppointmentsScreen} />
+    <Tab.Screen name="Appointments"  component={AppointmentsScreen} />
     <Tab.Screen name="Services" component={ServicesScreen} />
     <Tab.Screen name="Account" component={AccountProfileScreen} />
   </Tab.Navigator >
@@ -68,13 +70,13 @@ const HomeStack = () => (
 // Manifest of possible screens
 const RootNavigator = () => (
   <Stack.Navigator
-    initialRouteName="LoginStack"
-    screenOptions={{ headerShown: false }}>
-    <Tab.Screen name="AppointmentDetailsScreen" component={AppointmentDetailsScreen} />
-    <Tab.Screen name="AppointmentInputScreen" component={AppointmentInputScreen} />
-<Tab.Screen name="ChatsScreen" component={ChatsScreen} />
-    <Stack.Screen name="LoginStack" component={LoginStack} />
-    <Stack.Screen name="HomeStack" component={HomeStack} />
+    initialRouteName="LoginStack">
+    <Stack.Screen name="AppointmentDetailsScreen" component={AppointmentDetailsScreen} />
+    <Stack.Screen name="ServiceDetailsScreen" component={ServiceDetailsScreen} />
+    <Stack.Screen name="AppointmentInputScreen" component={AppointmentInputScreen} />
+    <Stack.Screen name="ChatsScreen" component={ChatsScreen} />
+    <Stack.Screen name="LoginStack" options={{ headerShown: false }} component={LoginStack} />
+    <Stack.Screen name="Home" component={HomeStack} />
   </Stack.Navigator>
 );
 

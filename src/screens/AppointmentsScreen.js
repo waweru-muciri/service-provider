@@ -7,11 +7,12 @@ import { TouchableOpacity, View } from 'react-native';
 import PageTitle from '../components/PageTitle';
 import PageHeader from '../components/PageHeader';
 import { DatePickerInput } from "react-native-paper-dates";
+import TextDisplay from '../components/TextDisplay';
 
 function AppointmentsScreen({ navigation, fetchData, deleteItem, appointments }) {
 
     const [filterDate, setInputDate] = useState(new Date())
-    const [filteredAppointments, setFilteredAppointments] = useState(appointments);
+    const [filteredAppointments, setFilteredAppointments] = useState([...appointments]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -28,11 +29,11 @@ function AppointmentsScreen({ navigation, fetchData, deleteItem, appointments })
     useEffect(() => {
         if (filterDate) {
             const filteredByDate = appointments.filter(appointment => {
-                const start_date = appointment.start_date?.toDate() || new Date()
+                const start_date = appointment?.start_date?.toDate() || new Date()
                 return (start_date.getDate() === filterDate.getDate()
                     && start_date.getMonth() === filterDate.getMonth()
                     && start_date.getFullYear() === filterDate.getFullYear())
-    
+
             })
             setFilteredAppointments(filteredByDate)
         }
@@ -43,12 +44,12 @@ function AppointmentsScreen({ navigation, fetchData, deleteItem, appointments })
         <ScrollView>
             <View style={{ flex: 1 }}>
                 <PageHeader>
-                    <PageTitle>Your appointments</PageTitle>
+                    <PageTitle>Your scheduled appointments</PageTitle>
                 </PageHeader>
                 <View style={{ marginTop: 20, marginLeft: 20, marginRight: 20 }}>
                     <DatePickerInput
                         locale="en-GB"
-                        label="Birthdate"
+                        label="Date"
                         value={filterDate}
                         onChange={(d) => setInputDate(d)}
                         inputMode="start"
@@ -56,6 +57,11 @@ function AppointmentsScreen({ navigation, fetchData, deleteItem, appointments })
                 </View>
                 <View style={{ width: "90%", marginLeft: "auto", marginRight: "auto", paddingTop: 20, paddingBottom: 20, }}>
                     <View style={{ flex: 1 }}>
+                        {
+                            (filteredAppointments.length == 0) && (
+                                <TextDisplay style={{ textAlign: "center" }}>No appointment for you today</TextDisplay>
+                            )
+                        }
                         <List.Section>
                             {
                                 filteredAppointments.map((appointment) => (

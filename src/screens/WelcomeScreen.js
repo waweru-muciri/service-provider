@@ -47,7 +47,7 @@ function WelcomeScreen({ navigation }) {
               dispatch(setUserProfile(userProfile));
               setIsLoading(false);
             })
-          navigation.navigate('HomeStack');
+          navigation.navigate('Home');
         })
         .catch((error) => {
           const { code, message } = error;

@@ -43,7 +43,7 @@ function SignupScreen({ navigation }) {
           .then(() => {
             dispatch(login(user));
             dispatch(setUserProfile(user));
-            navigation.navigate('HomeStack');
+            navigation.navigate('Home');
           })
           .catch(({ code, message }) => Alert.alert(message))
 

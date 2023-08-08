@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { handleItemFormSubmit } from '../reducers';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { DatePickerInput, TimePickerModal } from "react-native-paper-dates";
 import { TextInput, Text, Button, useTheme } from 'react-native-paper';
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
@@ -38,11 +38,9 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
         resolver: yupResolver(appointment_schema),
     });
 
-
+    const [showStartTimePicker, setShowStartTimePicker] = useState(false);
     const [appointmentStartDate, setAppointmentStartDate] = useState(new Date());
-    const [appointmentEndDate, setAppointmentEndDate] = useState(new Date());
-    const [showStartDateAndTimePicker, setShowStartDateAndTimePicker] = useState(false);
-    const [showEndDateAndTimePicker, setShowEndDateAndTimePicker] = useState(false);
+    const [appointmentStartTime, setAppointmentStartTime] = useState(0);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -50,6 +48,17 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
         });
     }, []);
 
+    const onDismiss = React.useCallback(() => {
+        setShowStartTimePicker(false)
+    }, [setShowStartTimePicker])
+
+    const onConfirm = React.useCallback(
+        ({ hours, minutes }) => {
+            setShowStartTimePicker(false);
+            setAppointmentStartTime(`${hours}: ${minutes}`);
+        },
+        [setShowStartTimePicker]
+    );
 
 
     return (
@@ -64,17 +73,7 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
                 >
                     <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
                         <PageTitle>Appointment Details</PageTitle>
-                        <PrimaryButton onPress={() => {
-                            navigation.navigate("ChatsScreen", {
-                                serviceProviderId: serviceProvider.id
-                            })
-                        }}>Start Chat</PrimaryButton>
                     </View>
-                    <TextDisplay style={styles.inputContainerTitle}>Details of Service to book</TextDisplay>
-                    <TextDisplay>Name of Provider: {serviceProvider.first_name} {serviceProvider.first_name}</TextDisplay>
-                    <TextDisplay>Service offered: {serviceProvider.service?.name}</TextDisplay>
-                    <TextDisplay>Service description: {serviceProvider.service?.description}</TextDisplay>
-                    <TextDisplay>Service cost: {serviceProvider.service?.price}</TextDisplay>
                     <TextDisplay style={styles.inputContainerTitle}>Appointment title</TextDisplay>
                     <Controller
                         control={control}
@@ -112,29 +111,18 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
                             flexDirection: 'row',
                             alignItems: "center",
                             textAlign: 'left',
-                            marginLeft: 30,
-                            marginTop: 10,
-                            marginBottom: 10,
+                            margin: 20,
                             justifyContent: "space-evenly",
                         }}>
-                        <Text style={{ flex: 2 }}>Selected Date: {appointmentStartDate.toLocaleDateString()}</Text>
-                        <Button icon="calendar-edit" mode="contained" onPress={() => {
-                            setShowStartDateAndTimePicker(!showStartDateAndTimePicker)
-                        }}>
-                            Edit
-                        </Button>
-                    </View>
-                    {showStartDateAndTimePicker && (
-                        <DateTimePicker
-                            mode={"date"}
-                            is24Hour={true}
+                        <DatePickerInput
+                            locale="en-GB"
+                            label="Date"
                             value={appointmentStartDate}
                             minimumDate={new Date()}
-                            onChange={(event, selectedDate) => {
-                                setShowStartDateAndTimePicker(!showStartDateAndTimePicker)
+                            onChange={(selectedDate) => {
                                 setAppointmentStartDate(selectedDate)
                             }} />
-                    )}
+                    </View>
                     <Text style={styles.inputContainerTitle}>Please select time</Text>
                     <View style={
                         {
@@ -146,25 +134,24 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
                             marginTop: 10,
                             marginBottom: 10,
                         }}>
-                        <Text style={{ flex: 2 }}>Selected Time: {appointmentEndDate.toLocaleTimeString()}</Text>
+                        <Text style={{ flex: 2 }}>Selected Time: {appointmentStartTime}</Text>
                         <Button icon="calendar-edit" mode="contained" onPress={() => {
-                            setShowEndDateAndTimePicker(!showEndDateAndTimePicker)
+                            setShowStartTimePicker(!showStartTimePicker)
                         }}>
                             Edit
                         </Button>
                     </View>
-
-                    {showEndDateAndTimePicker && (
-                        <DateTimePicker
-                            mode="time"
-                            is24Hour={true}
-                            value={appointmentEndDate}
-                            minimumDate={new Date()}
-                            onChange={(event, selectedDate) => {
-                                setShowEndDateAndTimePicker(!showEndDateAndTimePicker)
-                                setAppointmentEndDate(selectedDate)
-                            }} />
-                    )}
+                    {
+                        showStartTimePicker &&
+                        <TimePickerModal
+                            use24HourClock
+                            locale="en-GB"
+                            visible={showStartTimePicker}
+                            onDismiss={onDismiss}
+                            onConfirm={onConfirm}
+                            hours={12}
+                            minutes={14} />
+                    }
                     <Text style={styles.inputContainerTitle}>Appointment notes</Text>
                     <View style={styles.InputContainer}>
                         <Controller
@@ -197,7 +184,7 @@ function ServicesScreen({ navigation, route, submitForm, serviceProviders }) {
                             const service_name = service?.name
                             const appointment = {
                                 ...data, start_date: appointmentStartDate,
-                                end_date: appointmentEndDate,
+                                start_time: appointmentStartTime,
                                 service_provider, appointment_cost, appointment_venue, service_name, payed: false, serviceProvider
                             }
                             await submitForm(appointment, "appointments")

@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { db } from '../firebaseConfig';
 import { doc, getDocs, deleteDoc, collection, updateDoc, addDoc } from "firebase/firestore";
-import { addAppointment, appointmentsFetchDataSuccess, deleteAppointment, editAppointment, editService, serviceProvidersFetchDataSuccess,  } from '../actions/actions';
+import { addAppointment, appointmentsFetchDataSuccess, deleteAppointment, editAppointment, editService, serviceProvidersFetchDataSuccess, } from '../actions/actions';
 import { serviceProviders, appointments } from "./reducers"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -19,7 +19,7 @@ export const login = (user) => ({
 });
 
 export const logout = (user) => ({
-  type: LOGIN,
+  type: LOGOUT,
 });
 
 export const setUserProfile = (userProfile) => ({
@@ -34,12 +34,10 @@ function auth(state = initialAuthState, action) {
     case USER_PROFILE:
       return { ...state, userProfile: action.userProfile };
     case LOGOUT:
-      return async () => {
-        await AsyncStorage.removeItem('@loggedInUserID:id');
-        await AsyncStorage.removeItem('@loggedInUserID:key');
-        await AsyncStorage.removeItem('@loggedInUserID:password');
-        return { ...state, isLoggedIn: false, user: {}, userProfile: {} };
-      }
+      AsyncStorage.removeItem('@loggedInUserID:id').then(() => { });
+      AsyncStorage.removeItem('@loggedInUserID:key').then(() => { });
+      AsyncStorage.removeItem('@loggedInUserID:password', () => { });
+      return { ...state, isLoggedIn: false, user: {}, userProfile: {} };
     default:
       return state;
   }
@@ -115,7 +113,7 @@ export function handleItemFormSubmit(data, url) {
     typeof data.id !== "undefined"
       ? //send post request to edit the item
       updateDoc(doc(db, "appointments", data.id), data)
-      .then((docRef) => {
+        .then((docRef) => {
           let modifiedObject = Object.assign(
             {},
             data,
@@ -124,17 +122,17 @@ export function handleItemFormSubmit(data, url) {
             case "appointments":
               dispatch(editAppointment(modifiedObject));
               break;
-              case "service-providers":
-                dispatch(editService(modifiedObject));
-                break;
-              }
-            })
-            .catch((error) => {
-              console.log("Error updating document => ", error.response);
-            }).finally(() => {
+            case "service-providers":
+              dispatch(editService(modifiedObject));
+              break;
+          }
         })
-        : //send post to create item
-        addDoc(collection(db, "appointments"), data)
+        .catch((error) => {
+          console.log("Error updating document => ", error.response);
+        }).finally(() => {
+        })
+      : //send post to create item
+      addDoc(collection(db, "appointments"), data)
         .then((docRef) => {
           let addedItem = Object.assign({}, data, {
             id: docRef.id,
@@ -143,11 +141,11 @@ export function handleItemFormSubmit(data, url) {
             case "appointments":
               dispatch(addAppointment(addedItem));
               break;
-            }
-            
-          })
-          .catch((error) => {
-            console.log("Error adding document => ", error.response);
+          }
+
+        })
+        .catch((error) => {
+          console.log("Error adding document => ", error.response);
         }).finally(() => {
         });
   }
@@ -160,18 +158,18 @@ export function fetchDataFromUrl(url) {
       const snapshot = await getDocs(collection(db, url))
       const fetchedItems = snapshot.docs.map((doc) => {
         const fetchedObject = Object.assign({}, doc.data(),
-        {
-          id: doc.id,
+          {
+            id: doc.id,
           }
-          );
-          return fetchedObject;
-        });
-        switch (url) {
-          case "appointments":
+        );
+        return fetchedObject;
+      });
+      switch (url) {
+        case "appointments":
           dispatch(appointmentsFetchDataSuccess(fetchedItems));
           break;
-          case "service-providers":
-            dispatch(serviceProvidersFetchDataSuccess(fetchedItems));
+        case "service-providers":
+          dispatch(serviceProvidersFetchDataSuccess(fetchedItems));
           break;
       }
     } catch (error) {
@@ -181,7 +179,6 @@ export function fetchDataFromUrl(url) {
 
 export function handleDelete(itemId, url) {
   //send request to server to delete selected item
-  console.log("handleDelete =>", itemId, url)
   return async (dispatch) => {
     try {
       await deleteDoc(doc(db, url, itemId))

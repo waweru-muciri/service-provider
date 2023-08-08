@@ -46,7 +46,7 @@ function LoginScreen({ navigation }) {
             dispatch(login(userProfile));
             dispatch(setUserProfile(userProfile));
           }).catch(error => console.log(error))
-        navigation.navigate('HomeStack');
+        navigation.navigate('Home');
 
       })
       .catch((error) => {
