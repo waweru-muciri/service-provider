@@ -11,7 +11,6 @@ import TextDisplay from "../components/TextDisplay";
 
 export default function ServiceItem({ navigation, serviceProvider }) {
     const { id, first_name, last_name, service } = serviceProvider
-    console.log("service => ", service)
     return (
         <TouchableWithoutFeedback onPress={() => {
             navigation.navigate("ServiceDetailsScreen", { serviceProviderId: id })
