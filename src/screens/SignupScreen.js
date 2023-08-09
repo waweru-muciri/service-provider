@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { login, setUserProfile } from '../reducers';
 import { db } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button,  Text } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 
 function SignupScreen({ navigation }) {
   const auth = getAuth();
@@ -21,36 +21,37 @@ function SignupScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const onRegister = () => {
-    createUserWithEmailAndPassword(auth, email, password)
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    createUserWithEmailAndPassword(auth, trimmedEmail, trimmedPassword)
       .then((userCredential) => {
         const data = {
-          email: email,
+          email: trimmedEmail,
           first_name: first_name,
           last_name: last_name,
           phone_number: phone_number,
-          account_number: user.uid,
-          amount_in_account: 0
         };
         // Signed in 
-        const user = userCredential.user;
-        const user_uid = user.uid;
+        const user_uid = userCredential.user?.uid;
         //persist user data to async storage
         AsyncStorage.setItem('@loggedInUserID:id', user_uid);
-        AsyncStorage.setItem('@loggedInUserID:key', email);
-        AsyncStorage.setItem('@loggedInUserID:password', password);
+        AsyncStorage.setItem('@loggedInUserID:key', trimmedEmail);
+        AsyncStorage.setItem('@loggedInUserID:password', trimmedPassword);
         //persist user details into firestore
-        setDoc(doc(db, "users", user_uid), { ...data, id: user_uid })
+        const userDetailsToSave = { ...data, id: user_uid }
+        setDoc(doc(db, "users", user_uid), userDetailsToSave)
           .then(() => {
-            dispatch(login(user));
-            dispatch(setUserProfile(user));
+            dispatch(login(userDetailsToSave));
+            dispatch(setUserProfile(userDetailsToSave));
             navigation.navigate('Home');
           })
-          .catch(({ code, message }) => Alert.alert(message))
+          .catch(({ code, message }) => console.error(message))
 
       })
       .catch((error) => {
         const { code, message } = error;
-        Alert.alert(message);
+        console.error(message);
       });
   };
 

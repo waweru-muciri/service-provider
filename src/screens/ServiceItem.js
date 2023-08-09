@@ -11,7 +11,7 @@ import TextDisplay from "../components/TextDisplay";
 
 export default function ServiceItem({ navigation, serviceProvider }) {
     const { id, first_name, last_name, service } = serviceProvider
-
+    console.log("service => ", service)
     return (
         <TouchableWithoutFeedback onPress={() => {
             navigation.navigate("ServiceDetailsScreen", { serviceProviderId: id })
@@ -27,8 +27,8 @@ export default function ServiceItem({ navigation, serviceProvider }) {
             >
                 <View>
                     <Image
-                        source={service.image_url}
-                        style={{ width: "100%", height: 120, borderRadius: 5 }}
+                        source={{ uri: service?.image_url }}
+                        style={{ width: "100%", height: 150, borderRadius: 5 }}
                     />
                 </View>
                 <View
@@ -46,8 +46,8 @@ export default function ServiceItem({ navigation, serviceProvider }) {
                             >{service.name}</Text>
                         </View>
                         <TextDisplay>{`Provider: ${first_name} ${last_name}`}</TextDisplay>
-                        <TextDisplay>{service.description}</TextDisplay>
-                        <TextDisplay>{`Cost: ${service.price}`}</TextDisplay>
+                        <Text>{service.description}</Text>
+                        <Text>{`Cost: ${service.price}`}</Text>
                     </View>
                 </View>
             </Surface>

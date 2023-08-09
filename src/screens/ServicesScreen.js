@@ -67,7 +67,7 @@ function ServicesScreen({ navigation, fetchData, serviceProviders }) {
 const mapStateToProps = (state) => {
     return {
         user: state.user,
-        serviceProviders: state.serviceProviders,
+        serviceProviders: state.serviceProviders.filter(serviceProvider => serviceProvider.service?.name),
     }
 };
 

@@ -28,7 +28,7 @@ function ServicesScreen({ navigation, route, serviceProviders }) {
                         padding: 20,
                     }}
                 >
-                    <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
+                    <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", paddingBottom: 20 }}>
                         <PageTitle>Service Details</PageTitle>
                         <PrimaryButton onPress={() => {
                             navigation.navigate("ChatsScreen", {
@@ -37,7 +37,7 @@ function ServicesScreen({ navigation, route, serviceProviders }) {
                         }}>Start Chat</PrimaryButton>
                     </View>
                     <Image
-                        source={serviceProvider.service?.image_url}
+                        source={{ uri: serviceProvider.service?.image_url }}
                         style={{ width: "100%", height: 200, borderRadius: 5 }}
                     />
                     <TextDisplay>Name of Provider: {serviceProvider.first_name} {serviceProvider.first_name}</TextDisplay>
